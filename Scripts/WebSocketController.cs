@@ -18,11 +18,16 @@ namespace WebSocketUnity
 
         [SerializeField]
         private bool _logEventsInEditor;
+
+        [SerializeField]
+        private float _keepAliveTimeout = 30;
 #pragma warning restore CS0649
 
         public WebSocketEventHandler MessageHandler;
 
         private readonly Queue<string> _messageQueue = new Queue<string>();
+
+        private float _keepAliveNextTick;
 
         private WebSocket _webSocket;
 
@@ -56,6 +61,15 @@ namespace WebSocketUnity
                 }
 
                 MessageHandler?.Invoke(message);
+
+            }
+
+            if (Time.time > _keepAliveNextTick)
+            {
+
+                Send("ping");
+
+                _keepAliveNextTick = Time.time + _keepAliveTimeout;
 
             }
 
