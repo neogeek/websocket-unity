@@ -134,21 +134,31 @@ namespace WebSocketUnity
         public void Send(string message)
         {
 
-            _webSocket.Send(message);
+            if (isConnected && _webSocket.IsAlive)
+            {
+
+                _webSocket.Send(message);
+
+            }
 
         }
 
         public IEnumerator SendAsync(string message)
         {
 
-            var completed = false;
-
-            _webSocket.SendAsync(message, _ => completed = true);
-
-            while (completed == false)
+            if (isConnected && _webSocket.IsAlive)
             {
 
-                yield return null;
+                var completed = false;
+
+                _webSocket.SendAsync(message, _ => completed = true);
+
+                while (completed == false)
+                {
+
+                    yield return null;
+
+                }
 
             }
 
@@ -157,14 +167,19 @@ namespace WebSocketUnity
         public async Task SendAwait(string message)
         {
 
-            var completed = false;
-
-            _webSocket.SendAsync(message, _ => completed = true);
-
-            while (completed == false)
+            if (isConnected && _webSocket.IsAlive)
             {
 
-                await Task.Yield();
+                var completed = false;
+
+                _webSocket.SendAsync(message, _ => completed = true);
+
+                while (completed == false)
+                {
+
+                    await Task.Yield();
+
+                }
 
             }
 
