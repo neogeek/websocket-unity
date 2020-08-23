@@ -14,26 +14,26 @@ namespace WebSocketUnity
 
 #pragma warning disable CS0649
         [SerializeField]
-        private string _url;
+        protected string _url;
 
         [SerializeField]
-        private bool _logEventsInEditor;
+        protected bool _logEventsInEditor;
 
         [SerializeField]
-        private float _keepAliveTimeout = 30;
+        protected float _keepAliveTimeout = 30;
 #pragma warning restore CS0649
 
         public WebSocketEventHandler MessageHandler;
 
-        private readonly Queue<string> _messageQueue = new Queue<string>();
+        protected readonly Queue<string> _messageQueue = new Queue<string>();
 
-        private float _keepAliveNextTick;
+        protected float _keepAliveNextTick;
 
-        private WebSocket _webSocket;
+        protected WebSocket _webSocket;
 
-        public bool isConnected { get; private set; }
+        public bool isConnected { get; protected set; }
 
-        private void Awake()
+        protected void Awake()
         {
 
             _webSocket = new WebSocket(_url);
@@ -45,7 +45,7 @@ namespace WebSocketUnity
 
         }
 
-        private void Update()
+        protected void Update()
         {
 
             while (_messageQueue.Count > 0)
@@ -75,21 +75,21 @@ namespace WebSocketUnity
 
         }
 
-        private void OnEnable()
+        protected void OnEnable()
         {
 
             _webSocket.Connect();
 
         }
 
-        private void OnDisable()
+        protected void OnDisable()
         {
 
             _webSocket.Close();
 
         }
 
-        private void HandleOpen(object sender, EventArgs e)
+        protected void HandleOpen(object sender, EventArgs e)
         {
 
             if (_logEventsInEditor && Debug.isDebugBuild)
@@ -103,14 +103,14 @@ namespace WebSocketUnity
 
         }
 
-        private void HandleMessage(object sender, MessageEventArgs e)
+        protected void HandleMessage(object sender, MessageEventArgs e)
         {
 
             _messageQueue.Enqueue(e.Data);
 
         }
 
-        private void HandleClose(object sender, CloseEventArgs e)
+        protected void HandleClose(object sender, CloseEventArgs e)
         {
 
             if (_logEventsInEditor && Debug.isDebugBuild)
