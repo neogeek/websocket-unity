@@ -45,7 +45,7 @@ namespace WebSocketUnity
 
         }
 
-        protected void Update()
+        protected virtual void Update()
         {
 
             while (_messageQueue.Count > 0)
@@ -103,7 +103,7 @@ namespace WebSocketUnity
 
         }
 
-        protected void HandleMessage(object sender, MessageEventArgs e)
+        protected virtual void HandleMessage(object sender, MessageEventArgs e)
         {
 
             _messageQueue.Enqueue(e.Data);
