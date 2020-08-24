@@ -13,7 +13,7 @@
 ```json
 {
   "dependencies": {
-    "com.neogeek.websocket-unity": "https://github.com/neogeek/websocket-unity.git#v1.0.0",
+    "com.neogeek.websocket-unity": "https://github.com/neogeek/websocket-unity.git#v1.1.0",
     ...
   }
 }

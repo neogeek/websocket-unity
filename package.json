@@ -1,7 +1,7 @@
 {
   "name": "com.scottdoxey.websocket-unity",
   "displayName": "websocket-unity",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "unity": "2020.1",
   "description": "Simple wrapper for the websocket-csharp library.",
   "license": "MIT",
