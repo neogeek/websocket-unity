@@ -51,7 +51,7 @@ namespace WebSocketUnity
                 _jsonMessageQueue.Enqueue(message);
 
             }
-            catch (Exception _)
+            catch (Exception)
             {
 
                 _messageQueue.Enqueue(e.Data);
