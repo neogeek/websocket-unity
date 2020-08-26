@@ -15,6 +15,9 @@ namespace WebSocketUnity
 
         public WebSocketJsonEventHandler JsonMessageHandler;
 
+        private static readonly JsonSerializerSettings JSON_SETTINGS =
+            new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+
         private readonly Queue<T> _jsonMessageQueue = new Queue<T>();
 
         protected override void Update()
@@ -63,21 +66,21 @@ namespace WebSocketUnity
         public void Send(object message)
         {
 
-            base.Send(JsonConvert.SerializeObject(message));
+            base.Send(JsonConvert.SerializeObject(message, Formatting.None, JSON_SETTINGS));
 
         }
 
         public IEnumerator SendAsync(object message)
         {
 
-            return base.SendAsync(JsonConvert.SerializeObject(message));
+            return base.SendAsync(JsonConvert.SerializeObject(message, Formatting.None, JSON_SETTINGS));
 
         }
 
         public async Task SendAwait(object message)
         {
 
-            await base.SendAwait(JsonConvert.SerializeObject(message));
+            await base.SendAwait(JsonConvert.SerializeObject(message, Formatting.None, JSON_SETTINGS));
 
         }
 
