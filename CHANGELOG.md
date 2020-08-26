@@ -1,5 +1,10 @@
 # Changelog
 
+## [HEAD] - 2020-08-26
+
+- [feat] Switched from an abstract class with generic to using JObject. [#5](https://github.com/neogeek/websocket-unity/pull/5)
+- [hotfix] Ignore null properties when serializing object. [#4](https://github.com/neogeek/websocket-unity/pull/4)
+
 ## [v1.1.0] - 2020-08-23
 
 - [feat] JSON support [#3](https://github.com/neogeek/websocket-unity/pull/3)
