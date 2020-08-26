@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using WebSocketSharp;
@@ -10,7 +11,7 @@ using WebSocketSharp;
 namespace WebSocketUnity
 {
 
-    public abstract class WebSocketJsonController<T> : WebSocketController
+    public class WebSocketJsonController : WebSocketController
     {
 
         public WebSocketJsonEventHandler JsonMessageHandler;
@@ -18,7 +19,7 @@ namespace WebSocketUnity
         private static readonly JsonSerializerSettings JSON_SETTINGS =
             new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
 
-        private readonly Queue<T> _jsonMessageQueue = new Queue<T>();
+        private readonly Queue<JObject> _jsonMessageQueue = new Queue<JObject>();
 
         protected override void Update()
         {
@@ -49,7 +50,7 @@ namespace WebSocketUnity
             try
             {
 
-                var message = JsonConvert.DeserializeObject<T>(e.Data);
+                var message = JObject.Parse(e.Data);
 
                 _jsonMessageQueue.Enqueue(message);
 
@@ -85,7 +86,7 @@ namespace WebSocketUnity
         }
 
         [Serializable]
-        public class WebSocketJsonEventHandler : UnityEvent<T>
+        public class WebSocketJsonEventHandler : UnityEvent<JObject>
         {
 
         }
