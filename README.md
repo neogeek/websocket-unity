@@ -36,11 +36,13 @@ Add the `WebSocketController` component to any GameObject.
 
 ### WebSocketJsonController
 
-`WebSocketJsonController<T>` is an abstract class for handling custom JSON responses from a WebSocket server.
+`WebSocketJsonController` is similar to the base `WebSocketController` class, but this class also handles custom JSON responses from a WebSocket server.
 
 #### Example
 
 ```csharp
+using Newtonsoft.Json.Linq;
+using UnityEngine;
 using WebSocketUnity;
 
 public struct Message
@@ -56,17 +58,34 @@ public struct Message
 
 }
 
-public class WebSocketGameLobbyClient : WebSocketJsonController<Message>
+public class WebSocketGameLobbyClient : MonoBehaviour
 {
 
-    public void SendMessage()
+    [SerializeField]
+    private WebSocketJsonController _webSocketJsonController;
+
+    public void HandleMessage(JObject message)
     {
 
-        Send(new Message { type = "ping", gameId = "1", gameCode = "ABCD", playerId = "2" });
+        Debug.Log(message["game"]?["gameId"]);
+
+    }
+
+    public void CreateGame()
+    {
+
+        _webSocketJsonController.Send(new Message { type = "create" });
+
+    }
+
+    public void JoinGame()
+    {
+
+        _webSocketJsonController.Send(new Message { type = "join" });
 
     }
 
 }
 ```
 
-<img src="https://i.imgur.com/84XU6vp.png" width="400">
+<img src="https://i.imgur.com/YBfdwAX.png" width="400">
