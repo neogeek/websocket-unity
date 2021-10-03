@@ -12,7 +12,11 @@ namespace WebSocketUnity
 {
     public class WebSocketJsonController : WebSocketController
     {
-        public WebSocketJsonEventHandler JsonMessageHandler;
+        public delegate void WebSocketJsonEvent(JObject data);
+
+        public event WebSocketJsonEvent JsonMessageHandler;
+
+        [SerializeField] private WebSocketJsonUnityEvent _jsonMessageHandler;
 
         private static readonly JsonSerializerSettings JSON_SETTINGS =
             new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore};
@@ -27,10 +31,12 @@ namespace WebSocketUnity
             {
                 var message = _jsonMessageQueue.Dequeue();
 
-                if (_logEventsInEditor && Debug.isDebugBuild)
+                if (logEventsInEditor && Debug.isDebugBuild)
                 {
                     Debug.Log($"Message received: {JsonConvert.SerializeObject(message)}");
                 }
+
+                _jsonMessageHandler?.Invoke(message);
 
                 JsonMessageHandler?.Invoke(message);
             }
@@ -66,7 +72,7 @@ namespace WebSocketUnity
         }
 
         [Serializable]
-        public class WebSocketJsonEventHandler : UnityEvent<JObject>
+        public class WebSocketJsonUnityEvent : UnityEvent<JObject>
         {
         }
     }

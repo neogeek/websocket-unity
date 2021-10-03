@@ -10,15 +10,21 @@ namespace WebSocketUnity
 {
     public class WebSocketController : MonoBehaviour
     {
-#pragma warning disable CS0649
-        [SerializeField] protected string _url;
+        public const float DEFAULT_KEEP_ALIVE_TIMEOUT = 30;
 
-        [SerializeField] protected bool _logEventsInEditor;
+        public string url { get; protected set; }
 
-        [SerializeField] protected float _keepAliveTimeout = 30;
-#pragma warning restore CS0649
+        public bool isConnected { get; protected set; }
 
-        public WebSocketEventHandler MessageHandler;
+        public bool logEventsInEditor;
+
+        public float keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
+
+        public delegate void WebSocketStringEvent(string data);
+
+        public event WebSocketStringEvent StringMessageHandler;
+
+        [SerializeField] public WebSocketStringUnityEvent _stringMessageHandler;
 
         protected readonly Queue<string> _messageQueue = new Queue<string>();
 
@@ -26,16 +32,48 @@ namespace WebSocketUnity
 
         protected WebSocket _webSocket;
 
-        public bool isConnected { get; protected set; }
-
         protected void Awake()
         {
-            _webSocket = new WebSocket(_url);
+            if (url != null)
+            {
+                Connect(url);
+            }
+        }
+
+        public void Connect(string url)
+        {
+            this.url = url;
+
+            if (_webSocket != null)
+            {
+                Disconnect();
+            }
+
+            _webSocket = new WebSocket(url);
 
             _webSocket.OnOpen += HandleOpen;
             _webSocket.OnMessage += HandleMessage;
             _webSocket.OnClose += HandleClose;
             _webSocket.OnError += HandleError;
+
+            _webSocket.Connect();
+        }
+
+        public void Disconnect()
+        {
+            if (_webSocket == null)
+            {
+                return;
+            }
+
+            _webSocket.OnOpen -= HandleOpen;
+            _webSocket.OnMessage -= HandleMessage;
+            _webSocket.OnClose -= HandleClose;
+            _webSocket.OnError -= HandleError;
+
+            _webSocket.Close();
+
+            _webSocket = null;
         }
 
         protected virtual void Update()
@@ -44,37 +82,39 @@ namespace WebSocketUnity
             {
                 var message = _messageQueue.Dequeue();
 
-                if (_logEventsInEditor && Debug.isDebugBuild)
+                if (logEventsInEditor && Debug.isDebugBuild)
                 {
                     Debug.Log($"Message received: {message}");
                 }
 
-                MessageHandler?.Invoke(message);
+                _stringMessageHandler?.Invoke(message);
+
+                StringMessageHandler?.Invoke(message);
             }
 
             if (Time.time > _keepAliveNextTick)
             {
                 Send("ping");
 
-                _keepAliveNextTick = Time.time + _keepAliveTimeout;
+                _keepAliveNextTick = Time.time + keepAliveTimeout;
             }
         }
 
         protected void OnEnable()
         {
-            _webSocket.Connect();
+            _webSocket?.Connect();
         }
 
         protected void OnDisable()
         {
-            _webSocket.Close();
+            _webSocket?.Close();
         }
 
         protected void HandleOpen(object sender, EventArgs e)
         {
-            if (_logEventsInEditor && Debug.isDebugBuild)
+            if (logEventsInEditor && Debug.isDebugBuild)
             {
-                Debug.Log($"Connected to {_url}");
+                Debug.Log($"Connected to {url}");
             }
 
             isConnected = true;
@@ -87,9 +127,9 @@ namespace WebSocketUnity
 
         protected void HandleClose(object sender, CloseEventArgs e)
         {
-            if (_logEventsInEditor && Debug.isDebugBuild)
+            if (logEventsInEditor && Debug.isDebugBuild)
             {
-                Debug.Log($"Disconnected from {_url}");
+                Debug.Log($"Disconnected from {url}");
             }
 
             isConnected = false;
@@ -139,7 +179,7 @@ namespace WebSocketUnity
         }
 
         [Serializable]
-        public class WebSocketEventHandler : UnityEvent<string>
+        public class WebSocketStringUnityEvent : UnityEvent<string>
         {
         }
     }
